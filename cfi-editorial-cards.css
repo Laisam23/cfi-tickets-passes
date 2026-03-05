@@ -1,0 +1,490 @@
+/* ===========================
+   CFI — Editorial Cards (Modern Dark)
+   Place this in: Appearance → Customize → Additional CSS
+   =========================== */
+
+:root{
+  --cfi-bg: #1b2533;
+  --cfi-panel: #243245;
+  --cfi-panel-2: #2a3a51;
+  --cfi-stroke: rgba(255,255,255,.10);
+  --cfi-stroke-2: rgba(255,255,255,.14);
+
+  --cfi-text: rgba(255,255,255,.92);
+  --cfi-muted: rgba(255,255,255,.68);
+  --cfi-faint: rgba(255,255,255,.48);
+
+  --cfi-chip: rgba(255,255,255,.08);
+  --cfi-chip-2: rgba(255,255,255,.12);
+
+  --cfi-focus: rgba(255,255,255,.28);
+
+  --cfi-shadow: 0 14px 40px rgba(0,0,0,.35);
+  --cfi-shadow-soft: 0 10px 26px rgba(0,0,0,.28);
+
+  --cfi-radius-lg: 18px;
+  --cfi-radius-sm: 999px;
+
+  --cfi-max: 1100px;
+}
+
+.cfi-app{
+  color: var(--cfi-text);
+  max-width: var(--cfi-max);
+  margin: 0 auto;
+}
+
+.cfi-app button,
+.cfi-app input,
+.cfi-app select{
+  font: inherit;
+}
+
+.cfi-tabs{
+  display: inline-flex;
+  gap: 6px;
+  padding: 6px;
+  border: 1px solid var(--cfi-stroke);
+  border-radius: var(--cfi-radius-sm);
+  background: rgba(0,0,0,.12);
+  backdrop-filter: blur(8px);
+}
+
+.cfi-tab{
+  appearance: none;
+  border: 0;
+  cursor: pointer;
+  color: var(--cfi-muted);
+  background: transparent;
+  padding: 10px 14px;
+  border-radius: var(--cfi-radius-sm);
+  font-weight: 700;
+  letter-spacing: .2px;
+  transition: background .16s ease, color .16s ease, transform .16s ease;
+}
+.cfi-tab:hover{ color: var(--cfi-text); }
+.cfi-tab.is-active,
+.cfi-tab[aria-selected="true"]{
+  color: var(--cfi-text);
+  background: rgba(255,255,255,.10);
+}
+.cfi-tab:focus-visible{
+  outline: 2px solid var(--cfi-focus);
+  outline-offset: 2px;
+}
+
+/* Filters */
+.cfi-filters{
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px solid var(--cfi-stroke);
+  background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+  border-radius: var(--cfi-radius-lg);
+  box-shadow: var(--cfi-shadow-soft);
+}
+
+.cfi-filtersRow{
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+@media (min-width: 720px){
+  .cfi-filtersRow{
+    grid-template-columns: 180px 1fr auto auto;
+    align-items: end;
+    gap: 12px;
+  }
+}
+
+.cfi-field label{
+  display: block;
+  font-size: 12px;
+  color: var(--cfi-muted);
+  margin-bottom: 6px;
+  letter-spacing: .3px;
+}
+
+.cfi-select,
+.cfi-input{
+  width: 100%;
+  height: 44px;
+  border-radius: 12px;
+  border: 1px solid var(--cfi-stroke);
+  background: rgba(0,0,0,.14);
+  color: var(--cfi-text);
+  padding: 0 12px;
+  transition: border-color .16s ease, background .16s ease;
+}
+
+.cfi-select:focus-visible,
+.cfi-input:focus-visible{
+  outline: 2px solid var(--cfi-focus);
+  outline-offset: 2px;
+}
+
+.cfi-select:hover,
+.cfi-input:hover{
+  border-color: var(--cfi-stroke-2);
+  background: rgba(0,0,0,.18);
+}
+
+/* More filters panel */
+#cfiFilterMorePanel{
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--cfi-stroke);
+}
+
+.cfi-moreGrid{
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+@media (min-width: 720px){
+  .cfi-moreGrid{
+    grid-template-columns: 220px 220px;
+    gap: 12px;
+  }
+}
+
+/* Buttons */
+.cfi-btn{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: 1px solid var(--cfi-stroke);
+  cursor: pointer;
+  text-decoration: none;
+  user-select: none;
+  font-weight: 800;
+  letter-spacing: .2px;
+  transition: transform .14s ease, background .14s ease, border-color .14s ease, color .14s ease, opacity .14s ease;
+}
+.cfi-btn:active{ transform: translateY(1px); }
+
+.cfi-btnPrimary{
+  background: rgba(255,255,255,.10);
+  color: var(--cfi-text);
+}
+.cfi-btnPrimary:hover{
+  background: rgba(255,255,255,.14);
+  border-color: var(--cfi-stroke-2);
+}
+
+.cfi-btnGhost{
+  background: transparent;
+  color: var(--cfi-text);
+}
+.cfi-btnGhost:hover{
+  background: rgba(255,255,255,.08);
+  border-color: var(--cfi-stroke-2);
+}
+
+.cfi-btn:focus-visible{
+  outline: 2px solid var(--cfi-focus);
+  outline-offset: 2px;
+}
+
+/* Count */
+#cfiResultsCount{
+  margin: 14px 0 8px;
+  color: var(--cfi-muted);
+  font-size: 13px;
+}
+
+/* Day groups */
+.cfi-dayBlock{ margin-top: 14px; }
+
+.cfi-dayHeader{
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 0 4px 8px;
+}
+.cfi-dayTitle{
+  margin: 0;
+  font-size: 14px;
+  letter-spacing: .3px;
+  color: var(--cfi-muted);
+}
+.cfi-dayMeta{
+  font-size: 12px;
+  color: var(--cfi-faint);
+}
+
+/* Cards */
+.cfi-card{
+  border: 1px solid var(--cfi-stroke);
+  background: radial-gradient(1200px 300px at 20% 0%, rgba(255,255,255,.07), transparent 50%),
+              rgba(0,0,0,.10);
+  border-radius: var(--cfi-radius-lg);
+  padding: 14px;
+  box-shadow: var(--cfi-shadow-soft);
+  transition: background .16s ease, border-color .16s ease, transform .16s ease;
+}
+.cfi-card + .cfi-card{ margin-top: 12px; }
+
+.cfi-card:hover{
+  background: radial-gradient(1200px 300px at 20% 0%, rgba(255,255,255,.10), transparent 55%),
+              rgba(0,0,0,.14);
+  border-color: var(--cfi-stroke-2);
+  transform: translateY(-1px);
+}
+.cfi-card:focus-visible{
+  outline: 2px solid var(--cfi-focus);
+  outline-offset: 3px;
+}
+
+.cfi-cardTop{
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  gap: 12px;
+  align-items: start;
+}
+@media (min-width: 720px){
+  .cfi-cardTop{
+    grid-template-columns: 120px 1fr;
+    gap: 14px;
+  }
+}
+
+.cfi-cardThumb{
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid var(--cfi-stroke);
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.08), rgba(255,255,255,0)),
+    rgba(0,0,0,.18);
+}
+
+.cfi-cardThumb img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.cfi-cardInfo{ min-width: 0; }
+
+.cfi-cardTitle{
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.25;
+  font-weight: 900;
+  letter-spacing: .2px;
+}
+@media (min-width: 720px){
+  .cfi-cardTitle{ font-size: 16px; }
+}
+
+.cfi-cardMeta{
+  margin-top: 6px;
+  color: var(--cfi-muted);
+  font-size: 13px;
+}
+
+.cfi-cardPriceRow{
+  margin-top: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: baseline;
+}
+.cfi-cardPrice{
+  font-weight: 900;
+  font-size: 13px;
+  color: var(--cfi-text);
+}
+.cfi-cardFees{
+  font-size: 12px;
+  color: var(--cfi-faint);
+}
+
+.cfi-pills{
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.cfi-pill{
+  display: inline-flex;
+  align-items: center;
+  height: 26px;
+  padding: 0 10px;
+  border-radius: var(--cfi-radius-sm);
+  border: 1px solid var(--cfi-stroke);
+  background: var(--cfi-chip);
+  color: var(--cfi-text);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .2px;
+  white-space: nowrap;
+}
+.cfi-pillSoft{
+  background: var(--cfi-chip-2);
+  color: var(--cfi-muted);
+}
+
+.cfi-cardDesc{
+  margin: 12px 0 0;
+  color: var(--cfi-muted);
+  font-size: 13px;
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.cfi-cardActions{
+  margin-top: 12px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Modal */
+#cfiModal{
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: rgba(0,0,0,.58);
+  backdrop-filter: blur(10px);
+}
+#cfiModal[aria-hidden="true"]{ display:none; }
+
+body.cfi-lock{ overflow: hidden; }
+
+.cfi-modalCard{
+  width: min(760px, 100%);
+  border-radius: var(--cfi-radius-lg);
+  border: 1px solid var(--cfi-stroke);
+  background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+  box-shadow: var(--cfi-shadow);
+  padding: 16px;
+}
+@media (min-width: 720px){
+  .cfi-modalCard{ padding: 18px; }
+}
+
+.cfi-modalHeader{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+}
+.cfi-modalTitle{
+  margin:0;
+  font-size:18px;
+  line-height:1.2;
+  font-weight:900;
+}
+.cfi-modalMeta{
+  margin-top:6px;
+  color: var(--cfi-muted);
+  font-size:13px;
+}
+
+.cfi-modalClose{
+  appearance:none;
+  border: 1px solid var(--cfi-stroke);
+  background: rgba(0,0,0,.16);
+  color: var(--cfi-text);
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  cursor:pointer;
+  transition: background .14s ease, border-color .14s ease, transform .14s ease;
+}
+.cfi-modalClose:hover{
+  background: rgba(0,0,0,.22);
+  border-color: var(--cfi-stroke-2);
+}
+.cfi-modalClose:active{ transform: translateY(1px); }
+.cfi-modalClose:focus-visible{
+  outline: 2px solid var(--cfi-focus);
+  outline-offset:2px;
+}
+
+.cfi-modalBody{
+  margin-top:12px;
+  border-top:1px solid var(--cfi-stroke);
+  padding-top:12px;
+}
+
+.cfi-modalPriceRow{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  align-items:baseline;
+  margin-bottom:10px;
+}
+.cfi-modalPrice{ font-weight:900; font-size:14px; }
+.cfi-modalFees{ color: var(--cfi-faint); font-size:12px; }
+
+.cfi-modalDesc{
+  margin:0;
+  color: var(--cfi-muted);
+  font-size:14px;
+  line-height:1.55;
+}
+
+.cfi-modalSection{ margin-top:14px; }
+.cfi-sectionTitle{
+  margin:0 0 8px;
+  color: var(--cfi-text);
+  font-weight:900;
+  font-size:13px;
+  letter-spacing:.2px;
+}
+
+.cfi-tags{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+
+.cfi-tag{
+  display:inline-flex;
+  align-items:center;
+  height:26px;
+  padding:0 10px;
+  border-radius: var(--cfi-radius-sm);
+  border:1px solid var(--cfi-stroke);
+  background: rgba(0,0,0,.12);
+  color: var(--cfi-muted);
+  font-size:12px;
+  font-weight:800;
+}
+
+.cfi-inclusions{
+  margin:0;
+  padding-left:18px;
+  color: var(--cfi-muted);
+  line-height:1.5;
+}
+.cfi-inclusions li{ margin:6px 0; }
+
+.cfi-modalFooter{
+  margin-top:16px;
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+
+@media (prefers-reduced-motion: reduce){
+  *{ transition: none !important; }
+}
