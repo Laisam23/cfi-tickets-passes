@@ -548,7 +548,7 @@
     if (elReset) {
       elReset.addEventListener("click", () => {
         state.filters.day = "all";
-        state.filters.q = "";
+        state.filters.q = "all";
         state.filters.venue = "all";
         state.filters.kind = "all";
 
