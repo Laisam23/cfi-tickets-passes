@@ -539,7 +539,7 @@
     }
 
     if (elQuery) {
-      elQuery.addEventListener("input", () => {
+      elQuery.addEventListener("click", () => {
         state.filters.q = elQuery.value || "";
         render();
       });
