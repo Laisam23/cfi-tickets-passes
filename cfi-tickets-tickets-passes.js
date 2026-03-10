@@ -1,264 +1,409 @@
 /**
- * CFI Unified Tickets + Passes (Single Page)
- * Versione corretta:
- * - nessuna immagine nelle card
- * - layout solo testuale
- * - gestione filtri più pulita
- * - pronto per GitHub / WordPress
+ * CFI Browser — new UI logic
+ * Versione coerente con il nuovo HTML layout
  */
 
 (function () {
   const $ = (id) => document.getElementById(id);
 
-  if (!$("cfiResultsList") || !$("cfiModeTicketsBtn") || !$("cfiModePassesBtn")) return;
+  const elBrowser = $("cfiBrowser");
+  const elOpenFiltersBtn = $("cfiOpenFiltersBtn");
+  const elAdvancedFilters = $("cfiAdvancedFilters");
 
-  const TICKETS = [
-    { id: "t1", day: "Friday", time: "7:00 AM", title: "Friday Cinema - Film Block", venue: "—", type: "Film Block", tags: ["Cinema"] },
-    { id: "t2", day: "Friday", time: "10:00 AM", title: 'INTERNATIONAL FEATURE "ESPINA"', venue: "ACC Theatre", type: "Feature", tags: ["Feature", "Comedy", "Drama"] },
-    { id: "t3", day: "Friday", time: "10:30 AM", title: "WAIT... WHAT?! (SHORTS)", venue: "Avalon City Hall", type: "Shorts", tags: ["Short Film", "Drama", "Family", "Fantasy", "Comedy", "Action", "Suspense", "Student"] },
-    { id: "t4", day: "Friday", time: "11:00 AM", title: "The Lion's Den: A Live Pitch Panel (Fri 9.26)", venue: "Hotel Atwater", type: "Panel", tags: ["Panel", "Pitch"] },
-    { id: "t5", day: "Friday", time: "12:00 PM", title: "TRAUMA HURTS, TRUTH HEALS (U.S. SHORTS)", venue: "ACC Theatre", type: "Shorts", tags: ["Short Film", "Drama", "LGBTQ+", "Thriller", "Trauma"] },
-    { id: "t6", day: "Friday", time: "12:30 PM", title: "SCHITTZ & GIGGLEZ (SHORTS)", venue: "Avalon City Hall", type: "Shorts", tags: ["Short Film", "Comedy", "Drama", "Student", "Family", "Romance", "Horror", "Mental health"] },
-    { id: "t7", day: "Friday", time: "2:00 PM", title: "DRAWN TO LIFE (ANIMATION)", venue: "ACC Theatre", type: "Shorts", tags: ["Short Film", "Animation", "Sci-Fi", "Drama", "Romance", "Horror", "Comedy"] },
-    { id: "t8", day: "Friday", time: "2:30 PM", title: "THIS MIGHT GET MESSY (SHORTS)", venue: "Avalon City Hall", type: "Shorts", tags: ["Short Film", "Drama", "Family", "Comedy", "Suspense", "Thriller", "Romance"] },
-    { id: "t9", day: "Friday", time: "7:00 PM", title: "TRIBUTE AWARDS & EVENING SHORTS", venue: "Avalon Theatre", type: "Shorts", tags: ["Short Film", "Horror", "Thriller", "Fantasy", "Mental health", "Suspense", "Drama", "Adventure"] },
-    { id: "t10", day: "Friday", time: "9:30 PM", title: "Friday Evening Party", venue: "—", type: "Party", tags: ["Party"] },
+  const elDayChips = Array.from(document.querySelectorAll(".cfi-dayChip"));
+  const elViewSelect = $("cfiViewSelect");
+  const elTypeSelect = $("cfiTypeSelect");
+  const elVenueSelect = $("cfiVenueSelect");
+  const elPriceSelect = $("cfiPriceSelect");
+  const elSearchInput = $("cfiSearchInput");
+  const elResetFiltersBtn = $("cfiResetFiltersBtn");
 
-    { id: "t11", day: "Saturday", time: "7:00 AM", title: "Saturday Cinema - Film Block", venue: "—", type: "Film Block", tags: ["Cinema"] },
-    { id: "t12", day: "Saturday", time: "9:30 AM", title: "HIGH SCHOOL (SHORTS)", venue: "ACC Theatre", type: "Shorts", tags: ["Short Film", "Thriller", "Drama", "Sci-Fi", "Horror", "Romance", "Student"] },
-    { id: "t13", day: "Saturday", time: "10:00 AM", title: "DOCUMENTARIES (SHORTS)", venue: "Avalon City Hall", type: "Shorts", tags: ["Documentary", "Social Impact", "Art", "Political", "Music", "Adventure"] },
-    { id: "t14", day: "Saturday", time: "10:30 AM", title: "DISTURBANCE OF THE PEACE (SHORTS)", venue: "Lancer Auditorium", type: "Shorts", tags: ["Short Film", "Thriller", "Suspense", "Comedy", "Horror", "Experimental", "Drama", "Trauma"] },
-    { id: "t15", day: "Saturday", time: "11:30 AM", title: "THE FUNNY SIDE OF LIFE (SHORTS)", venue: "ACC Theatre", type: "Shorts", tags: ["Short Film", "Comedy", "Dark Comedy", "Drama", "Romance", "Student"] },
-    { id: "t16", day: "Saturday", time: "12:00 PM", title: "CRINGE BINGE (U.S. SHORTS)", venue: "Avalon City Hall", type: "Shorts", tags: ["Short Film", "Comedy", "Horror", "Psychological Thriller", "Drama", "Family", "Experimental"] },
-    { id: "t17", day: "Saturday", time: "12:30 PM", title: "SOMETHING AIN'T RIGHT (SHORTS)", venue: "Lancer Auditorium", type: "Shorts", tags: ["Short Film", "Drama", "Action", "Crime", "Family", "Thriller", "Trauma", "Suspense"] },
-    { id: "t18", day: "Saturday", time: "1:30 PM", title: 'US FEATURE "GO ON"', venue: "ACC Theatre", type: "Feature", tags: ["Feature", "Drama"] },
-    { id: "t19", day: "Saturday", time: "2:00 PM", title: "AROUND THE WORLD IN 90 MINUTES (INT. SHORTS)", venue: "Avalon City Hall", type: "Shorts", tags: ["Short Film", "Drama", "Suspense", "Comedy", "Fantasy", "Sci-Fi", "Family"] },
-    { id: "t20", day: "Saturday", time: "2:30 PM", title: "GLITCHES & GLOOM (U.S. SHORTS)", venue: "Lancer Auditorium", type: "Shorts", tags: ["Short Film", "Sci-Fi", "Thriller", "Drama", "Comedy", "Horror"] },
-    { id: "t21", day: "Saturday", time: "7:00 PM", title: "CLOSING FILMS", venue: "Avalon Theatre", type: "Closing", tags: ["Closing"] },
-    { id: "t22", day: "Saturday", time: "9:30 PM", title: "Saturday Closing Party", venue: "—", type: "Party", tags: ["Party"] },
+  const elSubnavLinks = Array.from(document.querySelectorAll(".cfi-subnavLink"));
 
-    { id: "t23", day: "Sunday", time: "7:00 AM", title: "Sunday Cinema - Film Block", venue: "—", type: "Film Block", tags: ["Cinema"] },
-    { id: "t24", day: "Sunday", time: "1:00 PM", title: "Panel: Festival, Markets & Distribution (Sun 9.28)", venue: "Avalon City Hall", type: "Panel", tags: ["Panel", "Industry"] },
-    { id: "t25", day: "Sunday", time: "2:30 PM", title: "CATALINA SPOTLIGHT", venue: "Avalon City Hall", type: "Spotlight", tags: ["Documentary", "Spotlight"] }
-  ].map((x) => ({
-    ...x,
-    url: "#",
-    desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-    priceFrom: x.type === "Party" ? "From $25" : "From $15",
-    feesNote: "Fees & taxes may apply at checkout."
-  }));
+  const elResultsCount = $("cfiResultsCount");
+  const elResultsList = $("cfiResultsList");
+  const elEmptyState = $("cfiEmptyState");
 
-  const PASSES = [
+  const elModal = $("cfiModal");
+  const elModalEyebrow = $("cfiModalEyebrow");
+  const elModalTitle = $("cfiModalTitle");
+  const elModalMeta = $("cfiModalMeta");
+  const elModalDesc = $("cfiModalDesc");
+  const elModalTags = $("cfiModalTags");
+  const elModalInclusionsWrap = $("cfiModalInclusionsWrap");
+  const elModalInclusions = $("cfiModalInclusions");
+  const elModalSaveBtn = $("cfiModalSaveBtn");
+  const elModalBuyBtn = $("cfiModalBuyBtn");
+
+  if (!elBrowser || !elResultsList || !elViewSelect) return;
+
+  const DATA = [
+    {
+      id: "t1",
+      kind: "ticket",
+      day: "Friday",
+      title: 'INTERNATIONAL FEATURE "ESPINA"',
+      venue: "ACC Theatre",
+      time: "10:00 AM",
+      type: "Feature",
+      price: 15,
+      priceLabel: "From $15",
+      description:
+        "A featured screening within the festival programme, presented with premium venue access and standard ticket availability.",
+      tags: ["Feature", "Drama", "Comedy"],
+      inclusions: [],
+      url: "#"
+    },
+    {
+      id: "t2",
+      kind: "ticket",
+      day: "Friday",
+      title: "WAIT... WHAT?! (SHORTS)",
+      venue: "Avalon City Hall",
+      time: "10:30 AM",
+      type: "Shorts",
+      price: 15,
+      priceLabel: "From $15",
+      description:
+        "A shorts block blending comedy, suspense and drama across a compact curated session.",
+      tags: ["Shorts", "Drama", "Comedy", "Student"],
+      inclusions: [],
+      url: "#"
+    },
+    {
+      id: "t3",
+      kind: "ticket",
+      day: "Friday",
+      title: "The Lion's Den: A Live Pitch Panel",
+      venue: "Hotel Atwater",
+      time: "11:00 AM",
+      type: "Panel",
+      price: 20,
+      priceLabel: "From $20",
+      description:
+        "A live industry panel focused on pitching, festival strategy and project positioning.",
+      tags: ["Panel", "Pitch", "Industry"],
+      inclusions: [],
+      url: "#"
+    },
+    {
+      id: "t4",
+      kind: "ticket",
+      day: "Friday",
+      title: "Friday Evening Party",
+      venue: "Catalina Casino",
+      time: "9:30 PM",
+      type: "Party",
+      price: 25,
+      priceLabel: "From $25",
+      description:
+        "Festival social event with evening access, networking atmosphere and celebration programming.",
+      tags: ["Party", "Networking", "Evening"],
+      inclusions: [],
+      url: "#"
+    },
+    {
+      id: "t5",
+      kind: "ticket",
+      day: "Saturday",
+      title: "HIGH SCHOOL (SHORTS)",
+      venue: "ACC Theatre",
+      time: "9:30 AM",
+      type: "Shorts",
+      price: 15,
+      priceLabel: "From $15",
+      description:
+        "A student-focused shorts selection spanning suspense, romance, sci-fi and drama.",
+      tags: ["Shorts", "Student", "Sci-Fi", "Drama"],
+      inclusions: [],
+      url: "#"
+    },
+    {
+      id: "t6",
+      kind: "ticket",
+      day: "Saturday",
+      title: "DOCUMENTARIES (SHORTS)",
+      venue: "Avalon City Hall",
+      time: "10:00 AM",
+      type: "Documentary",
+      price: 15,
+      priceLabel: "From $15",
+      description:
+        "A curated documentary shorts programme focused on art, politics, music and social themes.",
+      tags: ["Documentary", "Art", "Social Impact"],
+      inclusions: [],
+      url: "#"
+    },
+    {
+      id: "t7",
+      kind: "ticket",
+      day: "Saturday",
+      title: 'US FEATURE "GO ON"',
+      venue: "ACC Theatre",
+      time: "1:30 PM",
+      type: "Feature",
+      price: 18,
+      priceLabel: "From $18",
+      description:
+        "A featured U.S. screening within the Saturday programme, presented in the main festival venue.",
+      tags: ["Feature", "Drama"],
+      inclusions: [],
+      url: "#"
+    },
+    {
+      id: "t8",
+      kind: "ticket",
+      day: "Saturday",
+      title: "Saturday Closing Party",
+      venue: "Catalina Casino",
+      time: "9:30 PM",
+      type: "Party",
+      price: 25,
+      priceLabel: "From $25",
+      description:
+        "End-of-day gathering for festival guests, attendees and industry participants.",
+      tags: ["Party", "Closing", "Networking"],
+      inclusions: [],
+      url: "#"
+    },
+    {
+      id: "t9",
+      kind: "ticket",
+      day: "Sunday",
+      title: "Festival, Markets & Distribution",
+      venue: "Avalon City Hall",
+      time: "1:00 PM",
+      type: "Panel",
+      price: 20,
+      priceLabel: "From $20",
+      description:
+        "Industry discussion on circulation, festival markets and distribution pathways for projects.",
+      tags: ["Panel", "Distribution", "Industry"],
+      inclusions: [],
+      url: "#"
+    },
+    {
+      id: "t10",
+      kind: "ticket",
+      day: "Sunday",
+      title: "CATALINA SPOTLIGHT",
+      venue: "Avalon City Hall",
+      time: "2:30 PM",
+      type: "Spotlight",
+      price: 18,
+      priceLabel: "From $18",
+      description:
+        "A spotlight session dedicated to selected work highlighted in the festival programme.",
+      tags: ["Spotlight", "Documentary"],
+      inclusions: [],
+      url: "#"
+    },
     {
       id: "p1",
+      kind: "pass",
       day: "Friday",
       title: "Friday Cinema Pass",
-      note: "Day pass",
-      desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      venue: "Festival-wide",
+      time: "",
+      type: "Day Pass",
+      price: 79,
+      priceLabel: "From $79",
+      description:
+        "Day pass covering Friday screenings and selected festival access, subject to capacity and programme availability.",
+      tags: ["Day Pass", "Friday", "Priority Check-in"],
       inclusions: [
-        "Cinema access for Friday programming",
-        "Priority check-in (where available)",
-        "General seating subject to capacity",
-        "Lorem ipsum dolor sit amet"
+        "Access to Friday festival programming",
+        "Priority check-in where available",
+        "General seating subject to capacity"
       ],
-      url: "#",
-      priceFrom: "From $79",
-      feesNote: "Fees & taxes may apply at checkout.",
-      category: "Day Pass"
+      url: "#"
     },
     {
       id: "p2",
+      kind: "pass",
       day: "Saturday",
       title: "Saturday Cinema Pass",
-      note: "Day pass",
-      desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
+      venue: "Festival-wide",
+      time: "",
+      type: "Day Pass",
+      price: 79,
+      priceLabel: "From $79",
+      description:
+        "Day pass for Saturday screenings and selected events included in the official programme.",
+      tags: ["Day Pass", "Saturday", "Priority Check-in"],
       inclusions: [
-        "Cinema access for Saturday programming",
-        "Priority check-in (where available)",
-        "General seating subject to capacity",
-        "Lorem ipsum dolor sit amet"
+        "Access to Saturday festival programming",
+        "Priority check-in where available",
+        "General seating subject to capacity"
       ],
-      url: "#",
-      priceFrom: "From $79",
-      feesNote: "Fees & taxes may apply at checkout.",
-      category: "Day Pass"
+      url: "#"
+    },
+    {
+      id: "p3",
+      kind: "pass",
+      day: "Sunday",
+      title: "Sunday Cinema Pass",
+      venue: "Festival-wide",
+      time: "",
+      type: "Day Pass",
+      price: 69,
+      priceLabel: "From $69",
+      description:
+        "Sunday pass for closing-day access and selected festival programming.",
+      tags: ["Day Pass", "Sunday", "Closing Day"],
+      inclusions: [
+        "Access to Sunday festival programming",
+        "Selected closing-day access",
+        "General seating subject to capacity"
+      ],
+      url: "#"
+    },
+    {
+      id: "p4",
+      kind: "pass",
+      day: "Friday",
+      title: "Festival Premium Pass",
+      venue: "Festival-wide",
+      time: "",
+      type: "Premium Pass",
+      price: 149,
+      priceLabel: "From $149",
+      description:
+        "Premium access pass with broader festival coverage and priority-oriented entry benefits.",
+      tags: ["Premium Pass", "Priority", "Multi-access"],
+      inclusions: [
+        "Priority check-in",
+        "Expanded access across festival experiences",
+        "Selected premium entry benefits"
+      ],
+      url: "#"
     }
   ];
 
-  const DATASETS = {
-    tickets: TICKETS,
-    passes: PASSES
-  };
-
   const state = {
-    mode: "tickets",
-    filters: {
-      day: "all",
-      venue: "all",
-      kind: "all",
-      q: ""
-    },
-    moreOpen: false
+    day: "Friday",
+    view: "all",
+    type: "all",
+    venue: "all",
+    price: "all",
+    search: "",
+    advancedOpen: false,
+    modalId: null,
+    saved: new Set()
   };
 
-  const saved = new Set();
-
-  const elModeTickets = $("cfiModeTicketsBtn");
-  const elModePasses = $("cfiModePassesBtn");
-
-  const elDay = $("cfiFilterDay");
-  const elQuery = $("cfiFilterQuery");
-  const elReset = $("cfiFilterReset");
-  const elMoreBtn = $("cfiFilterMoreBtn");
-  const elMorePanel = $("cfiFilterMorePanel");
-
-  const elVenueWrap = $("cfiFilterVenueWrap");
-  const elVenue = $("cfiFilterVenue");
-  const elKindWrap = $("cfiFilterKindWrap");
-  const elKindLabel = $("cfiFilterKindLabel");
-  const elKind = $("cfiFilterKind");
-
-  const elCount = $("cfiResultsCount");
-  const elList = $("cfiResultsList");
-
-  const modal = $("cfiModal");
-  const mTitle = $("cfiMTitle");
-  const mMeta = $("cfiMMeta");
-  const mDesc = $("cfiMDesc");
-  const mPrice = $("cfiMPrice");
-  const mFees = $("cfiMFees");
-  const mSectionTags = $("cfiMSectionTags");
-  const mTags = $("cfiMTags");
-  const mSectionIncl = $("cfiMSectionIncl");
-  const mIncl = $("cfiMIncl");
-  const mBuy = $("cfiMBuy");
-  const mSave = $("cfiMSave");
-
-  function uniq(arr) {
-    return Array.from(new Set(arr)).filter(Boolean).sort((a, b) => a.localeCompare(b));
-  }
-
-  function buildOptions(selectEl, values) {
-    if (!selectEl) return;
-    while (selectEl.options.length > 1) {
-      selectEl.remove(1);
-    }
-    values.forEach((value) => {
-      const opt = document.createElement("option");
-      opt.value = value;
-      opt.textContent = value;
-      selectEl.appendChild(opt);
-    });
+  function escapeHtml(value) {
+    return String(value)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
   }
 
   function timeToMinutes(value) {
     if (!value) return 99999;
-    const match = String(value).trim().match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+    const match = value.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
     if (!match) return 99999;
 
     let hours = parseInt(match[1], 10);
     const minutes = parseInt(match[2], 10);
-    const ampm = match[3].toUpperCase();
+    const period = match[3].toUpperCase();
 
     if (hours === 12) hours = 0;
-    if (ampm === "PM") hours += 12;
+    if (period === "PM") hours += 12;
 
     return hours * 60 + minutes;
   }
 
-  function setActiveTab() {
-    if (elModeTickets) {
-      elModeTickets.setAttribute("aria-selected", state.mode === "tickets" ? "true" : "false");
-      elModeTickets.classList.toggle("is-active", state.mode === "tickets");
-    }
-
-    if (elModePasses) {
-      elModePasses.setAttribute("aria-selected", state.mode === "passes" ? "true" : "false");
-      elModePasses.classList.toggle("is-active", state.mode === "passes");
-    }
+  function uniq(values) {
+    return [...new Set(values.filter(Boolean))].sort((a, b) => a.localeCompare(b));
   }
 
-  function setMoreOpen(open) {
-    state.moreOpen = Boolean(open);
+  function buildSelectOptions(selectEl, items, firstLabel) {
+    if (!selectEl) return;
 
-    if (elMorePanel) {
-      elMorePanel.hidden = !state.moreOpen;
-    }
+    selectEl.innerHTML = "";
+    const first = document.createElement("option");
+    first.value = "all";
+    first.textContent = firstLabel;
+    selectEl.appendChild(first);
 
-    if (elMoreBtn) {
-      elMoreBtn.setAttribute("aria-expanded", state.moreOpen ? "true" : "false");
-    }
+    items.forEach((item) => {
+      const option = document.createElement("option");
+      option.value = item;
+      option.textContent = item;
+      selectEl.appendChild(option);
+    });
   }
 
-  function normalizeFiltersForMode() {
-    if (state.mode === "passes") {
-      state.filters.venue = "all";
-      const categories = uniq(DATASETS.passes.map((item) => item.category || item.note).filter(Boolean));
-      if (state.filters.kind !== "all" && !categories.includes(state.filters.kind)) {
-        state.filters.kind = "all";
-      }
-    } else {
-      const types = uniq(DATASETS.tickets.map((item) => item.type).filter(Boolean));
-      if (state.filters.kind !== "all" && !types.includes(state.filters.kind)) {
-        state.filters.kind = "all";
-      }
-    }
+  function getVisibleDataset() {
+    return DATA.filter((item) => item.day === state.day);
   }
 
-  function hydrateFilters() {
-    const days = uniq(DATASETS[state.mode].map((item) => item.day).filter(Boolean));
-    buildOptions(elDay, days);
+  function populateDynamicFilters() {
+    const dayItems = getVisibleDataset();
 
-    if (state.mode === "tickets") {
-      if (elVenueWrap) elVenueWrap.hidden = false;
-      if (elKindWrap) elKindWrap.hidden = false;
-      if (elKindLabel) elKindLabel.textContent = "Type";
+    const allowedByView =
+      state.view === "all"
+        ? dayItems
+        : dayItems.filter((item) => item.kind === state.view.slice(0, -1));
 
-      const venues = uniq(DATASETS.tickets.map((item) => item.venue).filter((venue) => venue && venue !== "—"));
-      const types = uniq(DATASETS.tickets.map((item) => item.type).filter(Boolean));
+    const types = uniq(allowedByView.map((item) => item.type));
+    const venues = uniq(
+      allowedByView
+        .map((item) => item.venue)
+        .filter((venue) => venue && venue !== "Festival-wide")
+    );
 
-      buildOptions(elVenue, venues);
-      buildOptions(elKind, types);
-    } else {
-      if (elVenueWrap) elVenueWrap.hidden = true;
-      if (elKindWrap) elKindWrap.hidden = false;
-      if (elKindLabel) elKindLabel.textContent = "Category";
+    buildSelectOptions(elTypeSelect, types, "Any type");
+    buildSelectOptions(elVenueSelect, venues, "All venues");
 
-      const categories = uniq(DATASETS.passes.map((item) => item.category || item.note).filter(Boolean));
-      buildOptions(elKind, categories);
+    if (![...elTypeSelect.options].some((opt) => opt.value === state.type)) {
+      state.type = "all";
+    }
+    if (![...elVenueSelect.options].some((opt) => opt.value === state.venue)) {
+      state.venue = "all";
     }
 
-    if (elDay) elDay.value = state.filters.day;
-    if (elVenue) elVenue.value = state.filters.venue;
-    if (elKind) elKind.value = state.filters.kind;
-    if (elQuery) elQuery.value = state.filters.q || "";
+    elTypeSelect.value = state.type;
+    elVenueSelect.value = state.venue;
   }
 
-  function matches(item) {
-    const f = state.filters;
+  function matchesView(item) {
+    if (state.view === "all") return true;
+    if (state.view === "tickets") return item.kind === "ticket";
+    if (state.view === "passes") return item.kind === "pass";
+    return true;
+  }
 
-    if (f.day !== "all" && item.day !== f.day) return false;
+  function matchesType(item) {
+    return state.type === "all" || item.type === state.type;
+  }
 
-    if (state.mode === "tickets") {
-      if (f.venue !== "all" && item.venue !== f.venue) return false;
-      if (f.kind !== "all" && item.type !== f.kind) return false;
-    } else {
-      const category = item.category || item.note || "";
-      if (f.kind !== "all" && category !== f.kind) return false;
-    }
+  function matchesVenue(item) {
+    return state.venue === "all" || item.venue === state.venue;
+  }
 
-    const q = (f.q || "").trim().toLowerCase();
+  function matchesPrice(item) {
+    if (state.price === "all") return true;
+    if (state.price === "low") return item.price < 25;
+    if (state.price === "mid") return item.price < 50;
+    if (state.price === "high") return item.price >= 50;
+    return true;
+  }
+
+  function matchesSearch(item) {
+    const q = state.search.trim().toLowerCase();
     if (!q) return true;
 
     const haystack = [
       item.title,
-      item.day,
-      item.time,
       item.venue,
+      item.time,
       item.type,
-      item.note,
-      item.category,
-      item.desc,
+      item.kind,
+      item.description,
       ...(item.tags || []),
       ...(item.inclusions || [])
     ]
@@ -269,347 +414,291 @@
     return haystack.includes(q);
   }
 
-  function groupByDay(items) {
-    const map = new Map();
+  function getFilteredItems() {
+    return DATA
+      .filter((item) => item.day === state.day)
+      .filter(matchesView)
+      .filter(matchesType)
+      .filter(matchesVenue)
+      .filter(matchesPrice)
+      .filter(matchesSearch)
+      .sort((a, b) => {
+        if (a.kind !== b.kind) return a.kind.localeCompare(b.kind);
+        return timeToMinutes(a.time) - timeToMinutes(b.time);
+      });
+  }
 
-    items.forEach((item) => {
-      if (!map.has(item.day)) map.set(item.day, []);
-      map.get(item.day).push(item);
+  function getEyebrow(kind) {
+    return kind === "pass" ? "Pass" : "Ticket";
+  }
+
+  function getMetaLine(item) {
+    if (item.kind === "pass") {
+      return item.venue === "Festival-wide"
+        ? `Valid for ${item.day} festival programming`
+        : `${item.venue} · ${item.day}`;
+    }
+
+    const bits = [item.venue, item.day, item.time].filter(Boolean);
+    return bits.join(" · ");
+  }
+
+  function getActionLabel(item) {
+    return item.kind === "pass" ? "Get pass" : "Buy ticket";
+  }
+
+  function createCard(item) {
+    const tagsHtml = (item.tags || [])
+      .map((tag) => `<span class="cfi-tag">${escapeHtml(tag)}</span>`)
+      .join("");
+
+    return `
+      <article class="cfi-resultCard" data-id="${escapeHtml(item.id)}" data-kind="${escapeHtml(item.kind)}" data-day="${escapeHtml(item.day)}">
+        <div class="cfi-resultCardTop">
+          <div class="cfi-resultCardHeading">
+            <p class="cfi-resultEyebrow">${escapeHtml(getEyebrow(item.kind))}</p>
+            <h3 class="cfi-resultTitle">${escapeHtml(item.title)}</h3>
+            <p class="cfi-resultLocation">${escapeHtml(getMetaLine(item))}</p>
+          </div>
+
+          <div class="cfi-resultMeta">
+            <span class="cfi-resultPrice">${escapeHtml(item.priceLabel)}</span>
+          </div>
+        </div>
+
+        <div class="cfi-resultCardBody">
+          <p class="cfi-resultDescription">${escapeHtml(item.description)}</p>
+
+          <div class="cfi-resultTags">
+            ${tagsHtml}
+          </div>
+        </div>
+
+        <div class="cfi-resultCardFooter">
+          <button class="cfi-actionBtn cfi-actionBtnGhost" type="button" data-action="details" data-id="${escapeHtml(item.id)}">
+            Details
+          </button>
+          <a class="cfi-actionBtn cfi-actionBtnPrimary" href="${escapeHtml(item.url)}" data-action="buy" data-id="${escapeHtml(item.id)}">
+            ${escapeHtml(getActionLabel(item))}
+          </a>
+        </div>
+      </article>
+    `;
+  }
+
+  function renderResults() {
+    populateDynamicFilters();
+
+    const items = getFilteredItems();
+
+    elResultsCount.textContent = `${items.length} result${items.length === 1 ? "" : "s"}`;
+
+    if (!items.length) {
+      elResultsList.innerHTML = "";
+      if (elEmptyState) elEmptyState.hidden = false;
+      return;
+    }
+
+    if (elEmptyState) elEmptyState.hidden = true;
+    elResultsList.innerHTML = items.map(createCard).join("");
+  }
+
+  function syncDayUI() {
+    elDayChips.forEach((chip) => {
+      const isActive = chip.dataset.day === state.day;
+      chip.classList.toggle("is-active", isActive);
+      chip.setAttribute("aria-selected", isActive ? "true" : "false");
     });
+  }
 
-    const order = ["Friday", "Saturday", "Sunday"];
-    const keys = Array.from(map.keys()).sort((a, b) => {
-      const indexA = order.indexOf(a);
-      const indexB = order.indexOf(b);
+  function syncViewUI() {
+    if (elViewSelect) {
+      elViewSelect.value = state.view;
+    }
 
-      if (indexA !== -1 || indexB !== -1) {
-        return (indexA === -1 ? 999 : indexA) - (indexB === -1 ? 999 : indexB);
-      }
-
-      return a.localeCompare(b);
+    elSubnavLinks.forEach((btn) => {
+      const isActive = btn.dataset.view === state.view;
+      btn.classList.toggle("is-active", isActive);
     });
-
-    return keys.map((key) => [key, map.get(key)]);
   }
 
-  function buildChips(item) {
-    let chips = [];
+  function syncAdvancedUI() {
+    if (elAdvancedFilters) {
+      elAdvancedFilters.hidden = !state.advancedOpen;
+    }
 
-    if (state.mode === "tickets") {
-      chips.push(item.type || "");
-      chips.push(item.venue && item.venue !== "—" ? item.venue : "");
-      chips = chips.concat(item.tags || []);
+    if (elOpenFiltersBtn) {
+      elOpenFiltersBtn.setAttribute("aria-expanded", state.advancedOpen ? "true" : "false");
+    }
+  }
+
+  function resetFilters() {
+    state.view = "all";
+    state.type = "all";
+    state.venue = "all";
+    state.price = "all";
+    state.search = "";
+    state.advancedOpen = false;
+
+    if (elViewSelect) elViewSelect.value = "all";
+    if (elTypeSelect) elTypeSelect.value = "all";
+    if (elVenueSelect) elVenueSelect.value = "all";
+    if (elPriceSelect) elPriceSelect.value = "all";
+    if (elSearchInput) elSearchInput.value = "";
+
+    syncViewUI();
+    syncAdvancedUI();
+    renderResults();
+  }
+
+  function openModal(itemId) {
+    const item = DATA.find((entry) => entry.id === itemId);
+    if (!item || !elModal) return;
+
+    state.modalId = item.id;
+
+    elModalEyebrow.textContent = getEyebrow(item.kind);
+    elModalTitle.textContent = item.title;
+    elModalMeta.textContent = getMetaLine(item);
+    elModalDesc.textContent = item.description;
+
+    elModalTags.innerHTML = (item.tags || [])
+      .map((tag) => `<span class="cfi-tag">${escapeHtml(tag)}</span>`)
+      .join("");
+
+    if (item.kind === "pass" && item.inclusions && item.inclusions.length) {
+      elModalInclusionsWrap.hidden = false;
+      elModalInclusions.innerHTML = item.inclusions
+        .map((entry) => `<li>${escapeHtml(entry)}</li>`)
+        .join("");
     } else {
-      chips.push("Pass");
-      chips.push(item.category || item.note || "");
+      elModalInclusionsWrap.hidden = true;
+      elModalInclusions.innerHTML = "";
     }
 
-    chips = chips.filter(Boolean);
+    elModalBuyBtn.textContent = getActionLabel(item);
+    elModalBuyBtn.href = item.url || "#";
 
-    const maxVisible = 4;
-    const visible = chips.slice(0, maxVisible);
-    const extra = chips.length - visible.length;
+    const isSaved = state.saved.has(item.id);
+    elModalSaveBtn.textContent = isSaved ? "Saved" : "Save";
+    elModalSaveBtn.disabled = isSaved;
 
-    return { visible, extra };
-  }
-
-  function createEl(tag, className, text) {
-    const node = document.createElement(tag);
-    if (className) node.className = className;
-    if (text != null) node.textContent = text;
-    return node;
-  }
-
-  function renderEmpty() {
-    elList.innerHTML = "";
-
-    const card = createEl("div", "cfi-card");
-    const title = createEl("p", "cfi-cardTitle", "No results");
-    const desc = createEl("p", "cfi-cardDesc", "Try changing filters.");
-
-    card.appendChild(title);
-    card.appendChild(desc);
-    elList.appendChild(card);
-  }
-
-  function toMetaLine(item) {
-    if (state.mode === "tickets") {
-      const bits = [];
-      if (item.venue && item.venue !== "—") bits.push(item.venue);
-      if (item.time) bits.push(item.time);
-      return bits.join(" · ") || item.day || "—";
-    }
-
-    const bits = [];
-    if (item.day) bits.push(item.day);
-    if (item.category || item.note) bits.push(item.category || item.note);
-    return bits.join(" · ") || "—";
-  }
-
-  function openModal(item) {
-    if (!modal) return;
-
-    if (mTitle) mTitle.textContent = item.title || "—";
-    if (mMeta) mMeta.textContent = toMetaLine(item);
-    if (mDesc) mDesc.textContent = item.desc || "";
-    if (mPrice) mPrice.textContent = item.priceFrom || "";
-    if (mFees) mFees.textContent = item.feesNote || "";
-
-    if (mBuy) {
-      mBuy.href = item.url || "#";
-      mBuy.textContent = state.mode === "tickets" ? "Buy ticket" : "Get pass";
-    }
-
-    if (mSave) {
-      mSave.textContent = saved.has(item.id) ? "Saved" : "Save";
-      mSave.disabled = saved.has(item.id);
-    }
-
-    if (state.mode === "tickets") {
-      if (mSectionTags) mSectionTags.hidden = false;
-      if (mSectionIncl) mSectionIncl.hidden = true;
-
-      if (mTags) {
-        mTags.innerHTML = "";
-        (item.tags || []).forEach((tag) => {
-          mTags.appendChild(createEl("span", "cfi-tag", tag));
-        });
-      }
-    } else {
-      if (mSectionTags) mSectionTags.hidden = true;
-      if (mSectionIncl) mSectionIncl.hidden = false;
-
-      if (mIncl) {
-        mIncl.innerHTML = "";
-        (item.inclusions || []).forEach((line) => {
-          mIncl.appendChild(createEl("li", "", line));
-        });
-      }
-    }
-
-    modal.dataset.current = item.id;
-    modal.dataset.mode = state.mode;
-    modal.setAttribute("aria-hidden", "false");
+    elModal.setAttribute("aria-hidden", "false");
     document.body.classList.add("cfi-lock");
   }
 
   function closeModal() {
-    if (!modal) return;
-    modal.setAttribute("aria-hidden", "true");
+    if (!elModal) return;
+    elModal.setAttribute("aria-hidden", "true");
     document.body.classList.remove("cfi-lock");
-    modal.dataset.current = "";
-    modal.dataset.mode = "";
+    state.modalId = null;
   }
 
-  function renderCardsForDay(day, items) {
-    const block = createEl("div", "cfi-dayBlock");
-
-    const header = createEl("div", "cfi-dayHeader");
-    header.appendChild(createEl("p", "cfi-dayTitle", day));
-    header.appendChild(createEl("span", "cfi-dayMeta", `${items.length} item${items.length === 1 ? "" : "s"}`));
-    block.appendChild(header);
-
-    const sorted = state.mode === "tickets"
-      ? items.slice().sort((a, b) => timeToMinutes(a.time) - timeToMinutes(b.time))
-      : items.slice();
-
-    sorted.forEach((item) => {
-      const card = createEl("div", "cfi-card");
-      card.tabIndex = 0;
-      card.setAttribute("role", "button");
-      card.setAttribute("aria-label", `Open details for ${item.title}`);
-
-      const info = createEl("div", "cfi-cardInfo");
-      const title = createEl("p", "cfi-cardTitle", item.title || "—");
-      const meta = createEl("div", "cfi-cardMeta", toMetaLine(item));
-
-      info.appendChild(title);
-      info.appendChild(meta);
-
-      if (item.priceFrom || item.feesNote) {
-        const priceRow = createEl("div", "cfi-cardPriceRow");
-        if (item.priceFrom) priceRow.appendChild(createEl("span", "cfi-cardPrice", item.priceFrom));
-        if (item.feesNote) priceRow.appendChild(createEl("span", "cfi-cardFees", item.feesNote));
-        info.appendChild(priceRow);
-      }
-
-      const { visible, extra } = buildChips(item);
-      const chips = createEl("div", "cfi-pills");
-
-      visible.forEach((chip, index) => {
-        const className = index > 0 ? "cfi-pill cfi-pillSoft" : "cfi-pill";
-        chips.appendChild(createEl("span", className, chip));
+  function bindEvents() {
+    elDayChips.forEach((chip) => {
+      chip.addEventListener("click", () => {
+        state.day = chip.dataset.day || "Friday";
+        syncDayUI();
+        renderResults();
       });
+    });
 
-      if (extra > 0) {
-        chips.appendChild(createEl("span", "cfi-pill cfi-pillSoft", `+${extra}`));
-      }
-
-      info.appendChild(chips);
-
-      const desc = createEl("p", "cfi-cardDesc", item.desc || "");
-
-      const actions = createEl("div", "cfi-cardActions");
-
-      const btnDetails = createEl("button", "cfi-btn cfi-btnPrimary", "Details");
-      btnDetails.type = "button";
-      btnDetails.addEventListener("click", (event) => {
-        event.stopPropagation();
-        openModal(item);
+    if (elViewSelect) {
+      elViewSelect.addEventListener("change", () => {
+        state.view = elViewSelect.value;
+        syncViewUI();
+        renderResults();
       });
+    }
 
-      const btnBuy = document.createElement("a");
-      btnBuy.className = "cfi-btn cfi-btnGhost";
-      btnBuy.href = item.url || "#";
-      btnBuy.target = "_blank";
-      btnBuy.rel = "noopener";
-      btnBuy.textContent = state.mode === "tickets" ? "Buy ticket" : "Get pass";
-      btnBuy.addEventListener("click", (event) => event.stopPropagation());
+    elSubnavLinks.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        state.view = btn.dataset.view || "all";
+        syncViewUI();
+        renderResults();
+      });
+    });
 
-      actions.appendChild(btnDetails);
-      actions.appendChild(btnBuy);
+    if (elTypeSelect) {
+      elTypeSelect.addEventListener("change", () => {
+        state.type = elTypeSelect.value;
+        renderResults();
+      });
+    }
 
-      card.appendChild(info);
-      card.appendChild(desc);
-      card.appendChild(actions);
+    if (elVenueSelect) {
+      elVenueSelect.addEventListener("change", () => {
+        state.venue = elVenueSelect.value;
+        renderResults();
+      });
+    }
 
-      card.addEventListener("click", () => openModal(item));
-      card.addEventListener("keydown", (event) => {
-        if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault();
-          openModal(item);
+    if (elPriceSelect) {
+      elPriceSelect.addEventListener("change", () => {
+        state.price = elPriceSelect.value;
+        renderResults();
+      });
+    }
+
+    if (elSearchInput) {
+      elSearchInput.addEventListener("input", () => {
+        state.search = elSearchInput.value || "";
+        renderResults();
+      });
+    }
+
+    if (elOpenFiltersBtn) {
+      elOpenFiltersBtn.addEventListener("click", () => {
+        state.advancedOpen = !state.advancedOpen;
+        syncAdvancedUI();
+      });
+    }
+
+    if (elResetFiltersBtn) {
+      elResetFiltersBtn.addEventListener("click", resetFilters);
+    }
+
+    if (elResultsList) {
+      elResultsList.addEventListener("click", (event) => {
+        const detailsBtn = event.target.closest('[data-action="details"]');
+        if (detailsBtn) {
+          openModal(detailsBtn.dataset.id);
         }
       });
-
-      block.appendChild(card);
-    });
-
-    elList.appendChild(block);
-  }
-
-  function render() {
-    setActiveTab();
-    normalizeFiltersForMode();
-
-    const items = DATASETS[state.mode].filter(matches);
-
-    if (elCount) {
-      elCount.textContent = `${items.length} result${items.length === 1 ? "" : "s"}`;
     }
 
-    elList.innerHTML = "";
-
-    if (items.length === 0) {
-      renderEmpty();
-      return;
-    }
-
-    const groups = groupByDay(items);
-    groups.forEach(([day, arr]) => renderCardsForDay(day, arr));
-  }
-
-  function bind() {
-    elModeTickets.addEventListener("click", () => {
-      if (state.mode === "tickets") return;
-
-      state.mode = "tickets";
-      state.filters.venue = "all";
-      state.filters.kind = "all";
-
-      hydrateFilters();
-      render();
-    });
-
-    elModePasses.addEventListener("click", () => {
-      if (state.mode === "passes") return;
-
-      state.mode = "passes";
-      state.filters.venue = "all";
-      state.filters.kind = "all";
-
-      hydrateFilters();
-      render();
-    });
-
-    if (elDay) {
-      elDay.addEventListener("change", () => {
-        state.filters.day = elDay.value;
-        render();
-      });
-    }
-
-    if (elQuery) {
-      elQuery.addEventListener("input", () => {
-        state.filters.q = elQuery.value || "";
-        render();
-      });
-    }
-
-    if (elReset) {
-      elReset.addEventListener("click", () => {
-        state.filters.day = "all";
-        state.filters.q = "all";
-        state.filters.venue = "all";
-        state.filters.kind = "all";
-
-        if (elDay) elDay.value = "all";
-        if (elQuery) elQuery.value = "";
-        if (elVenue) elVenue.value = "all";
-        if (elKind) elKind.value = "all";
-
-        render();
-      });
-    }
-
-    if (elMoreBtn) {
-      elMoreBtn.addEventListener("click", () => {
-        setMoreOpen(!state.moreOpen);
-      });
-    }
-
-    if (elVenue) {
-      elVenue.addEventListener("change", () => {
-        state.filters.venue = elVenue.value;
-        render();
-      });
-    }
-
-    if (elKind) {
-      elKind.addEventListener("change", () => {
-        state.filters.kind = elKind.value;
-        render();
-      });
-    }
-
-    if (modal) {
-      modal.addEventListener("click", (event) => {
-        const target = event.target;
-        if (target && target.dataset && target.dataset.close === "1") {
+    if (elModal) {
+      elModal.addEventListener("click", (event) => {
+        const closeBtn = event.target.closest("[data-close='1']");
+        if (closeBtn || event.target === elModal) {
           closeModal();
         }
       });
     }
 
     document.addEventListener("keydown", (event) => {
-      if (event.key === "Escape" && modal && modal.getAttribute("aria-hidden") === "false") {
+      if (event.key === "Escape" && elModal && elModal.getAttribute("aria-hidden") === "false") {
         closeModal();
       }
     });
 
-    if (mSave) {
-      mSave.addEventListener("click", () => {
-        const id = modal?.dataset?.current;
-        if (!id) return;
-
-        saved.add(id);
-        mSave.textContent = "Saved";
-        mSave.disabled = true;
+    if (elModalSaveBtn) {
+      elModalSaveBtn.addEventListener("click", () => {
+        if (!state.modalId) return;
+        state.saved.add(state.modalId);
+        elModalSaveBtn.textContent = "Saved";
+        elModalSaveBtn.disabled = true;
       });
     }
   }
 
-  setMoreOpen(false);
-  hydrateFilters();
-  bind();
-  render();
+  function init() {
+    syncDayUI();
+    syncViewUI();
+    syncAdvancedUI();
+    renderResults();
+    bindEvents();
+  }
+
+  init();
 })();
