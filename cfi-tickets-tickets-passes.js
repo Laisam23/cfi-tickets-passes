@@ -2,7 +2,7 @@
  * CFI Browser — new UI logic
  * Versione coerente con il nuovo HTML layout
  */
-
+console.log("CFI JS loaded");
 (function () {
   const $ = (id) => document.getElementById(id);
 
